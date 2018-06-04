@@ -1,0 +1,5 @@
+.rowScrolling::after {
+   content: ': scrolling';
+   font-size: 0.65rem;
+   color: #aaa;
+}

@@ -1,3 +1,6 @@
+/* https://github.com/bvaughn/react-virtualized/blob/master/source/WindowScroller/WindowScroller.example.js */
+/* https://bvaughn.github.io/react-virtualized/#/components/WindowScroller */ 
+
 type item = {
   a: string,
   b: int
@@ -46,54 +49,133 @@ let items = [|
              
 |];
 
+type state = {
+  scrollToIndex: int
+};
 
-let component = ReasonReact.statelessComponent("Example");
+type action =
+  | UpdateScrollToIndex(int);
+
+let reducer = (action, _state) =>
+  switch (action) {
+  | UpdateScrollToIndex(value) => ReasonReact.Update({scrollToIndex: value})
+  };
+
+let component = ReasonReact.reducerComponent("Example");
+
+let noRowsRenderer = <div>(ReasonReact.string("No rows"))</div>;
+
+/* .rowScrolling::after { */
+/*   content: ': scrolling'; */
+/*   font-size: 0.65rem; */
+/*   color: #aaa; */
+/* } */
+
+let setListEl: (Js.nullable(ReasonReact.reactRef)) => unit = [%raw (a) => "{window.listEl = a}"];
 
 let make = _children => {
   ...component,
+  initialState: () => {
+    scrollToIndex: -1
+  },
+  reducer,
   render: self => {
+    let list = [|"George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus" ,"George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus" , "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus" ,"George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus" ,"George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus", "George", "Lisa", "Ahmed", "Rhys", "Rachel", "Fatima", "Alberto", "Sarah", "Seamus"|];
+    
+    let rowRenderer = (rowRenderParams: List.rowRenderParams) => {
+      /* Js.log(rowRenderParams); */
+      let row = list[rowRenderParams |. List.index];  
+      /* const className = cn(styles.row, { */
+      /*   [styles.rowScrolling]: isScrolling, */
+      /*   isVisible: isVisible, */
+      /* }); */
+      let className = if (rowRenderParams |. List.isVisible) {
+        "isVisible"
+      } else {
+        ""
+      };
+
+      let className' = className ++ if (rowRenderParams |. List.isScrolling) {
+        " rowScrolling"
+      } else {
+        ""
+      };
+
+      <div key=(rowRenderParams |. List.key) className=className'>
+        (ReasonReact.string(row))
+      </div>
+    };
+    
     <div>
-      (ReasonReact.string("Hi"))
       <WindowScroller>
         ((wp: WindowScroller.params) => {
-          /* <AutoSizer> */
-           /*   ((asize: AutoSizer.params) => { */
-          Js.log("autoSizer");
-          let rows = Array.mapi((idx, item: item) => {
-              [| (<div style=(ReactDOMRe.Style.make(~width="80px", ()))>
-                    (ReasonReact.string(item.a))
-                  </div>)
-               ,  (<div style=(ReactDOMRe.Style.make(~width="80px", ()))>
-                    (ReasonReact.string(string_of_int(item.b)))
-                  </div>)
-                |] |> ReasonReact.array
-             }, items);
-
-          let columns = [|
-            <Table.Column label="Column A" dataKey="a" flexGrow=1 />,
-            <Table.Column label="Column B" dataKey="b" flexGrow=1 />,
-          |];
-
-          let rowRenderer = (rowRenderParams: Table.rowRenderParams) => {
-            <div key=(rowRenderParams |. Table.key) style=(ReactDOMRe.Style.make(~display="flex", ~flexDirection="row", ()))>
-              (rows[rowRenderParams |. Table.index])
-            </div>
-          };
-      
-          <Table
-            height=(wp |. WindowScroller.height)
-            isScrolling=(false)
-            rowHeight=(150)
-            scrollToIndex=(0)
-            scrollTop=(wp |. WindowScroller.scrollTop)
-            width=(1000)
-            rowRenderer=rowRenderer
-            rows=rows
-            columns=columns
-            columnWidth=(123)
-          />
+          Js.log("wp");
+          Js.log(wp);  
+          <AutoSizer>
+            ((ap: AutoSizer.params) => {
+              Js.log("ap");
+              Js.log(ap);
+              <div ref=(wp |. WindowScroller.registerChild)>
+              <List
+                ref=((el) => {(setListEl(el))})    
+                autoHeight=(true)
+                height=(wp |. WindowScroller.height)
+                isScrolling=(wp |. WindowScroller.isScrolling)
+                onScroll=(wp |. WindowScroller.onChildScroll)
+                overscanRowCount=(2)
+                rowCount=(Array.length(list))
+                rowHeight=(30)
+                rowRenderer=(rowRenderer)
+                scrollToIndex=(self.state.scrollToIndex)
+                scrollTop=(wp |. WindowScroller.scrollTop)
+                width=(ap |. AutoSizer.width)
+              />
+              </div>
+            })
+          </AutoSizer>
         })
       </WindowScroller>
+      /* <WindowScroller> */
+      /*   ((wp: WindowScroller.params) => { */
+      /*     /\* <AutoSizer> *\/ */
+      /*      /\*   ((asize: AutoSizer.params) => { *\/ */
+      /*     Js.log("autoSizer"); */
+      /*     let rows = Array.mapi((idx, item: item) => { */
+      /*         [| (<div style=(ReactDOMRe.Style.make(~width="80px", ()))> */
+      /*               (ReasonReact.string(item.a)) */
+      /*             </div>) */
+      /*          ,  (<div style=(ReactDOMRe.Style.make(~width="80px", ()))> */
+      /*               (ReasonReact.string(string_of_int(item.b))) */
+      /*             </div>) */
+      /*           |] |> ReasonReact.array */
+      /*        }, items); */
+
+      /*     let columns = [| */
+      /*       <Table.Column label="Column A" dataKey="a" flexGrow=1 />, */
+      /*       <Table.Column label="Column B" dataKey="b" flexGrow=1 />, */
+      /*     |]; */
+
+      /*     let rowRenderer = (rowRenderParams: Table.rowRenderParams) => { */
+      /*       <div key=(rowRenderParams |. Table.key) style=(ReactDOMRe.Style.make(~display="flex", ~flexDirection="row", ()))> */
+      /*         (rows[rowRenderParams |. Table.index]) */
+      /*       </div> */
+      /*     }; */
+      
+      /*     <Table */
+      /*     /\* height=(wp |. WindowScroller.height) *\/ */
+      /*       height=(600) */
+      /*       isScrolling=(wp |. WindowScroller.isScrolling) */
+      /*       rowHeight=(150) */
+      /*       scrollToIndex=(0) */
+      /*       scrollTop=(0) */
+      /*       width=(1000) */
+      /*       rowRenderer=rowRenderer */
+      /*       rows=rows */
+      /*       columns=columns */
+      /*       columnWidth=(123) */
+      /*     /> */
+      /*   }) */
+      /* </WindowScroller> */
     </div>
   }
 };

@@ -7,10 +7,16 @@ type params = {
   width: int,
   scrollLeft: int,
   scrollTop: int,
-  isScrolling: bool
+  isScrolling: bool,
+  onChildScroll: unit => unit,
+  registerChild: Js.nullable(Dom.element) => unit
 };
 
-let make = (children) => {
+/* onChildScroll: ({scrollTop: number}) => void, */
+/* registerChild: (?Element) => void, */
+
+let make = (/* scrollElement, */
+            children) => {
   ReasonReact.wrapJsForReason(
     ~reactClass=windowScroller,
     ~props={},
