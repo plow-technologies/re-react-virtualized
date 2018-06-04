@@ -1,0 +1,28 @@
+{
+  "name": "re-react-virtualized",
+  "bsc-flags": [
+    "-bs-no-version-header",
+    "-bs-super-errors"
+  ],
+  "reason": {
+    "react-jsx": 2
+  },
+  "package-specs": [
+    "commonjs",
+    "es6"
+  ],
+  "bs-dependencies": [
+    "reason-react"
+  ],
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "example/src",
+      "type": "dev"
+    }
+  ],
+  "refmt": 3
+}
