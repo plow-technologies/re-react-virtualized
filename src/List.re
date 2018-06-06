@@ -16,31 +16,33 @@ let make = (~autoHeight=false,
             ~isScrolling=false,
             ~onScroll=()=>(),
             ~height: int,
-            ~noRowsRenderer=()=>(),
+            ~noRowsRenderer=()=>ReasonReact.null,
             ~overscanRowCount: int,
             ~rowCount: int,
             ~rowHeight: int,
             ~rowRenderer: rowRenderParams => ReasonReact.reactElement,
             ~scrollToIndex: int,
-            ~scrollTop,
+            ~scrollTop=0,
             ~width: int,
+            ~strRef="",
             children) => {
   ReasonReact.wrapJsForReason(
     ~reactClass=list,
     ~props={
       "autoHeight": autoHeight,
-      "className": className,
+      /* "className": className, */
       "height": height,
-      "isScrolling": isScrolling,
+      /* "isScrolling": isScrolling, */
       "noRowsRendered": noRowsRenderer,
-      "onScroll": onScroll,
-      "overscanRowCount": overscanRowCount,
+      /* "onScroll": onScroll, */
+      /* "overscanRowCount": overscanRowCount, */
       "width": width,
       "rowCount": rowCount,
       "rowHeight": rowHeight,
       "rowRenderer": rowRenderer,
-      "scrollToIndex": scrollToIndex,
-      "scrollTop": scrollTop
+      /* "scrollToIndex": scrollToIndex, */
+      /* "scrollTop": scrollTop, */
+      "ref": strRef
     },
     children
   );
