@@ -17,8 +17,8 @@
   "author": "James Haver II",
   "license": "MIT",
   "dependencies": {
-    "react": ">=16.4.0",
-    "react-dom": ">=16.4.0",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
     "reason-react": "^0.4.2",
     "react-virtualized": "^9.19.1"
   },
